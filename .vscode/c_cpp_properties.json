@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "name": "RP-Pico-W",
+            "compileCommands": "${workspaceFolder}/build/compile_commands.json",
+            "compilerPath": "/usr/bin/arm-none-eabi-gcc",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "linux-gcc-arm",
+            "configurationProvider": "none"
+        }
+    ],
+    "version": 4
+}

@@ -1,0 +1,16 @@
+{
+    "c-cpp-flylint.includePaths": [
+        "${workspaceFolder}/libs/include",
+        "${workspaceFolder}/build",
+        "${workspaceFolder}/src"
+    ],
+    "cmake.environment": {
+        "PICO_SDK_PATH": "${userHome}/programming/rpi_2040/pico-sdk",
+        "FREERTOS_KERNEL_PATH": "${userHome}/programming/rpi_2040/FreeRTOS-Kernel"
+    },
+    "files.associations": {
+        "*.h": "c",
+        "*.h.in": "c",
+        "type_traits": "c"
+    }
+}
