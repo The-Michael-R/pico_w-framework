@@ -103,8 +103,8 @@ The code structure supposed to be quiet simple to understand and extend.
 
 ## Folder structure
 
-All _user_ functions supposed to live in `libs/include/<YourFunkt>/` for the
-h-files and `libs/lib/<YourFunkt>/` for the c-files.
+All _user_ functions supposed to live in `libs/include/<YourFunct>/` for the
+h-files and `libs/lib/<YourFunct>/` for the c-files.
 
 Your task-related functions are called in three stages by the `src/main.c` file
 as mentioned below. Additional functions related to the task might be placed
@@ -125,9 +125,9 @@ options.
 
 Adding new (and remove the task1 example) needs a simple change in the
 [`libs/CMakeLists.txt`](libs/CMakeLists.txt). Just add a line like
-`#add_subdirectory("lib/<YourFunkt>")`to that file pointing to the folder.
+`#add_subdirectory("lib/<YourFunct>")`to that file pointing to the folder.
 
-Additional a `libs/lib/<YourFunkt>/CMakeLists.txt` needs to be created along
+Additional a `libs/lib/<YourFunct>/CMakeLists.txt` needs to be created along
 your c-files. This file, unfortunately is a bit complicated on the first view.
 But take a look on the existing libs (e.g. the one in wlan). The important ones
 are:

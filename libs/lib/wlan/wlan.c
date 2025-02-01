@@ -143,6 +143,10 @@ eRetVal_t eWlanRtosInit(void)
         {
             xTimerStart(sState->xTimer, 0);
         }
+        else
+        {
+            eRetVal = ErrError;
+        }
     }
 
     return (eRetVal);
