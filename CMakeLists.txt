@@ -20,7 +20,7 @@ add_compile_definitions(HOST_LOG_PORT=54323)    # Defines the debug UDP-port
 ################################################################################
 # No or little manual changes after this
 
-set(PICOTOOL_FETCH_FROM_GIT_PATH
+set(PICOTOOL_FETCH_FROM_GIT_PATH)
 
 # Needed for Pico-W, otherwise #include "pico/cyw43_arch.h" won't be found
 # Needs to be before include(pico_sdk_import.cmake)

@@ -62,16 +62,22 @@ eRetVal_t eTask1HwInit(void)
 eRetVal_t eTask1RtosInit(void)
 {
     eRetVal_t eRetVal = ErrNoError;
+    BaseType_t xReturned;
 
     /* Create the queue receive task as described in the comments at the top
     of this file. */
-    xTaskCreate (vTask1Main,
-                "Task1",
-                configMINIMAL_STACK_SIZE,
-                NULL,
-                TASK1_PRIORITY,
-                NULL
-                );
+    xReturned = xTaskCreate (vTask1Main,
+                    "Task1",
+                    configMINIMAL_STACK_SIZE,
+                    NULL,
+                    TASK1_PRIORITY,
+                    NULL
+                    );
+
+    if (pdPASS != xReturned)
+    {
+        eRetVal = ErrError;
+    }
 
     return (eRetVal);
 }

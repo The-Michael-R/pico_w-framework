@@ -53,7 +53,9 @@
 /* --- Local macro definitions ---------------------------------------------- */
 
 #define WLAN_PRIORITY (tskIDLE_PRIORITY + 2UL)
-#define WLAN_MAIN_STACK (512UL * 5U)
+#define WLAN_MAIN_STACK           (512UL * 5U)
+
+#define WLAN_POLL_RATE_MS     (2UL * 1000UL)
 
 
 /* --- Local type/struct definitions ---------------------------------------- */
@@ -109,29 +111,38 @@ eRetVal_t eWlanPreInit(void)
 eRetVal_t eWlanRtosInit(void)
 {
     eRetVal_t eRetVal = ErrNoError;
+    BaseType_t xReturned;
     sWlanState_t* const sState = sWlanGetState();
 
     vTcpUdpInit(); // Here to account the buffers to the WLAN task
 
-    xTaskCreateAffinitySet(
-        vWlanMainTask,
-        "WLAN",
-        WLAN_MAIN_STACK,
-        NULL,
-        WLAN_PRIORITY,
-        1UL << 0U,
-        &sState->xMainTask);
 
-    sState->xTimer = xTimerCreate(
-        "WLAN_Tmr",
-        pdMS_TO_TICKS(2000),
-        pdTRUE,
-        0,
-        vWlanTimerCB);
+    xReturned = xTaskCreateAffinitySet(
+                    vWlanMainTask,
+                    "WLAN",
+                    WLAN_MAIN_STACK,
+                    NULL,
+                    WLAN_PRIORITY,
+                    1UL << 0U,
+                    &sState->xMainTask);
 
-    if (NULL != sState->xTimer)
+    if (pdPASS != xReturned)
     {
-        xTimerStart(sState->xTimer, 0);
+        eRetVal = ErrError;
+    }
+    else
+    {
+        sState->xTimer = xTimerCreate(
+            "WLAN_Tmr",
+            pdMS_TO_TICKS(WLAN_POLL_RATE_MS),
+            pdTRUE,
+            0,
+            vWlanTimerCB);
+
+        if (NULL != sState->xTimer)
+        {
+            xTimerStart(sState->xTimer, 0);
+        }
     }
 
     return (eRetVal);
