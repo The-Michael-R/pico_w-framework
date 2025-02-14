@@ -12,7 +12,7 @@ add_library(${CURR_LIB}
 # List all include directories here:
 # This way you can include them as #include "lib1/lib1.h"
 target_include_directories(${CURR_LIB} PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../include
+        ${PROJECT_SOURCE_DIR}/libs/include
         ${PROJECT_SOURCE_DIR}/src
         )
 
