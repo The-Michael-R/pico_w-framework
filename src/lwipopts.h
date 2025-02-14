@@ -1,28 +1,12 @@
-#ifndef _LWIPOPTS_EXAMPLE_COMMONH_H
-#define _LWIPOPTS_EXAMPLE_COMMONH_H
+#ifndef _LWIPOPTS_H
+#define _LWIPOPTS_H
 
 #include "pico/aon_timer.h"
 #include "pico/time.h"
-//#include "wlan/mysntp.h"
 
+#define NO_SYS 0
 
-// Common settings used in most of the pico_w examples
-// (see https://www.nongnu.org/lwip/2_1_x/group__lwip__opts.html for details)
-
-// allow override in some examples
-#ifndef NO_SYS
-#define NO_SYS                      0
-#endif
-// allow override in some examples
-#ifndef LWIP_SOCKET
-#define LWIP_SOCKET                 0
-#endif
-#if PICO_CYW43_ARCH_POLL
-#define MEM_LIBC_MALLOC             1
-#else
-// MEM_LIBC_MALLOC is incompatible with non polling versions
 #define MEM_LIBC_MALLOC             0
-#endif
 #define MEM_ALIGNMENT               4
 #define MEM_SIZE                    4000
 #define MEMP_NUM_TCP_SEG            32
@@ -110,31 +94,23 @@
 // ping_thread sets socket receive timeout, so enable this feature
 #define LWIP_SO_RCVTIMEO 1
 
-#define SNTP_SERVER_DNS 1
-#define SNTP_DEBUG LWIP_DBG_OFF
-#define SNTP_TIMEOFFSET (+2)
 
-#define SNTP_SET_SYSTEM_TIME_US(_Xsec, _Xusec)         \
-    do                                                 \
-    {                                                  \
-        struct timespec ts = {                         \
-            .tv_sec  = _Xsec,                          \
-            .tv_nsec = _Xusec * 10000UL                \
-        };                                             \
-        aon_timer_set_time(&ts);                       \
+#define SNTP_SERVER_DNS           (1)
+#define SNTP_DEBUG       LWIP_DBG_OFF
+#define SNTP_TIMEOFFSET          (+2)
+#define SNTP_CHECK_RESPONSE       (0)  //< No need for precission and round-trip compensation
+
+// Seconds are sufficient, so use the simple SNTP_SET_SYSTEM_TIME
+#ifndef SNTP_SET_SYSTEM_TIME
+#define SNTP_SET_SYSTEM_TIME(_Xsec)    \
+    do                                 \
+    {                                  \
+        struct timespec ts = {         \
+            .tv_sec  = _Xsec,          \
+            .tv_nsec = 0               \
+        };                             \
+        aon_timer_set_time(&ts);       \
     } while (0);
+#endif
 
-#define SNTP_GET_SYSTEM_TIME(sec, us)                  \
-    do                                                 \
-    {                                                  \
-        struct timespec ts = {                         \
-            .tv_sec  = 0,                              \
-            .tv_usec = 0                               \
-        };                                             \
-        aon_timer_get_time(&ts);                       \
-        (sec) = ts.tv_sec;                             \
-        (us)  = ts.tv_usec / 10000UL;                  \
-        sntp_set_sync_status(SNTP_SYNC_STATUS_RESET);  \
-    } while (0);
-
-#endif /* __LWIPOPTS_H__ */
+#endif /* _LWIPOPTS_H */
