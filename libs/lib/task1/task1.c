@@ -98,7 +98,7 @@ void vTask1Main(void * pvParameters)
         vTaskDelay(1000);
         DBG_PR(
             DBG_ERROR,
-            FN_TEMP,
+            FN_UNKNOWN,
             "Ping %02d:%02d:%02d!\n", tm.tm_hour, tm.tm_min, tm.tm_sec);
     }
 }

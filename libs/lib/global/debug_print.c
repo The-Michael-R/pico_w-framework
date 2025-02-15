@@ -12,10 +12,13 @@
 
 // libc includes
 #include <stdio.h>
-#include <stdbool.h>
+#include <stdlib.h>
 
 // pico-sdk includes
 // FreeRTOS includes
+#include "FreeRTOS.h" /* Must come first. */
+#include "semphr.h"
+
 // Project includes
 #include "global/debug_print.h"
 
@@ -29,7 +32,19 @@
 
 /* --- Static variables ----------------------------------------------------- */
 
+static SemaphoreHandle_t xMessageBufferSem;
+static char caMessageBuffer[MAX_UDP_BUFFER];
+
 static logLevel_t eaDebugServerityLevel[NumCl];
+static char caLevelIndicator[NumDbgLvl + 1UL][13U] =
+{
+    {},
+    {"\e[0;31m-E-"},
+    {"\e[0;33m-W-"},
+    {"\e[0;32m-I-"},
+    {"\e[0;37m-D-"},
+    {"\e[0;37m---"}
+};
 
 /* --- Static function prototypes ------------------------------------------- */
 
@@ -44,7 +59,25 @@ eRetVal_t eDebugPreInit(void)
     eaDebugServerityLevel[FN_WLAN]    = DEFAULT_DEBUG_LEVEL;
     eaDebugServerityLevel[FN_SNTP]    = DEFAULT_DEBUG_LEVEL;
     eaDebugServerityLevel[FN_TCPUDP]  = DEFAULT_DEBUG_LEVEL;
-    eaDebugServerityLevel[FN_TEMP]    = DEFAULT_DEBUG_LEVEL;
+    eaDebugServerityLevel[FN_SNTP]    = DEFAULT_DEBUG_LEVEL;
+
+    return(eRetVal);
+}
+
+eRetVal_t eDebugRtosInit(void)
+{
+    eRetVal_t eRetVal = ErrNoError;
+
+    xMessageBufferSem = xSemaphoreCreateBinary();
+
+    if(NULL == xMessageBufferSem)
+    {
+        eRetVal = ErrError;
+    }
+    else
+    {
+        xSemaphoreGive(xMessageBufferSem);
+    }
 
     return(eRetVal);
 }
@@ -62,23 +95,14 @@ void vDebugSetSeverity(const function_t eFunction, const logLevel_t eSeverity)
 void _vDebugPrint(
     const function_t eFunction,
     const logLevel_t eLevel,
-    const char *cpFileName,
-    const char *cpFunction,
+    const char* cpFileName,
+    const char* cpFunction,
     const uint32_t uLineNumber,
     const uint8_t uCore,
-    const char *format,
+    const char* format,
     ...)
 {
-    char caLevelIndicator[NumDbgLvl + 1UL][13U] =
-        {
-            {"\e[0;31m-E-"},
-            {"\e[0;33m-W-"},
-            {"\e[0;32m-I-"},
-            {"\e[0;37m-D-"},
-            {"\e[0;37m---"}
-        };
-    char caMessageBuffer[MAX_UDP_BUFFER];
-    char *cDbgLvl;
+    char* cDbgLvl;
     uint16_t uCurrPos;
     va_list args;
 
@@ -93,35 +117,41 @@ void _vDebugPrint(
             cDbgLvl = caLevelIndicator[NumDbgLvl];
         }
 
-        uCurrPos = snprintf(
-            caMessageBuffer,
-            MAX_UDP_BUFFER,
-            "%s C%d %s:%s.%d\e[0m: ",
-            cDbgLvl,
-            uCore,
-            cpFileName,
-            cpFunction,
-            (int)uLineNumber
-            );
 
-        va_start(args, format);
-        vsnprintf(
-            &caMessageBuffer[uCurrPos],
-            (MAX_UDP_BUFFER - uCurrPos),
-            format, args
-            );
-        va_end(args);
-
-        // Print to UART
-        printf(caMessageBuffer);
-
-        // If WIFI is up, send the string via UDP
-        if (bWlanIsConnected())
+        if(pdTRUE == xSemaphoreTake(xMessageBufferSem, (TickType_t)2U))
         {
-            vTcpUdpPrintUdp(caMessageBuffer);
+
+            uCurrPos = snprintf(
+                caMessageBuffer,
+                MAX_UDP_BUFFER,
+                "%s C%d %s:%s.%d\e[0m: ",
+                cDbgLvl,
+                uCore,
+                cpFileName,
+                cpFunction,
+                (int)uLineNumber
+                );
+
+            va_start(args, format);
+            vsnprintf(
+                &caMessageBuffer[uCurrPos],
+                (MAX_UDP_BUFFER - uCurrPos),
+                format, args
+                );
+            va_end(args);
+
+            // Print to UART
+            printf(caMessageBuffer);
+
+            // If WIFI is up, send the string via UDP
+            if (bWlanIsConnected())
+            {
+                vTcpUdpPrintUdp(caMessageBuffer);
+            }
+
+            xSemaphoreGive(xMessageBufferSem);
         }
     }
 }
-
 
 /* --- Static functions ----------------------------------------------------- */

@@ -84,7 +84,6 @@ pico_enable_stdio_usb(${PROJECT_NAME} 1)
 # Point the linker to all library entries:
 target_link_libraries(${PROJECT_NAME} PUBLIC
         ${LIBRARIES}
-        pico_stdlib
         FreeRTOS-Kernel-Heap4
         )
 

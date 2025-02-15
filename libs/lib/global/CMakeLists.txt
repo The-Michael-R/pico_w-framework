@@ -22,9 +22,9 @@ target_include_directories(${CURR_LIB} PUBLIC
 
 # Point the linker to all library entries:
 target_link_libraries(${CURR_LIB} PUBLIC
-        pico_stdlib
+        FreeRTOS-Kernel-Heap4
         )
 
-# Append the currend library to the global list anr return it to the callee
+# Append the currend library to the global list and return it to the callee
 list(APPEND LIBRARIES ${CURR_LIB})
 return(PROPAGATE LIBRARIES)

@@ -53,15 +53,16 @@
  */
 typedef enum logLevel_tag
 {
-    DBG_ERROR,                  ///< Error level (highest priority)
-    DBG_WARNING,                ///< Warning level, identical to DBG_WARN
-    DBG_WARN = DBG_WARNING,     ///< Warning level, identical to DBG_WARNING
-    DBG_INFORMATION,            ///< Information level, identical to DBG_INFO
-    DBG_INFO = DBG_INFORMATION, ///< Information level, identical to DBG_INFORMATION
-    DBG_DEBUG,                  ///< Debug level, identical to DBG_DBG
-    DBG_DBG = DBG_DEBUG,        ///< Debug level, identical to DBG_DEBUG
-    DBG_ALL = DBG_DEBUG,        ///< Print all messages, identical to DBG_DEBUG
-    NumDbgLvl                   ///< Number of entries in this enum type
+    DBG_OFF         = 0,               ///< Disables the print (must not used as DBG_PR parameter)
+    DBG_ERROR       = 1,               ///< Error level (highest priority)
+    DBG_WARNING     = 2,               ///< Warning level, identical to DBG_WARN
+    DBG_WARN        = DBG_WARNING,     ///< Warning level, identical to DBG_WARNING
+    DBG_INFORMATION = 3,               ///< Information level, identical to DBG_INFO
+    DBG_INFO        = DBG_INFORMATION, ///< Information level, identical to DBG_INFORMATION
+    DBG_DEBUG       = 4,               ///< Debug level, identical to DBG_DBG
+    DBG_DBG         = DBG_DEBUG,       ///< Debug level, identical to DBG_DEBUG
+    DBG_ALL         = DBG_DEBUG,       ///< Print all messages, identical to DBG_DEBUG
+    NumDbgLvl       = 5                ///< Number of entries in this enum type
 } logLevel_t;
 
 /**
@@ -74,7 +75,6 @@ typedef enum function_tag
     FN_WLAN,
     FN_SNTP,
     FN_TCPUDP,
-    FN_TEMP,
     NumCl
 } function_t;
 
