@@ -30,7 +30,7 @@ and work.
 The paths to both SDKs are set in the [`CMakeLists.txt`](CMakeLists.txt).
 
 > [!Note]
-> If you see the following runtime error please update the piko-sdk to 2.1.1 or
+> If you see the following runtime error please update the pico-sdk to 2.1.1 or
 > newer:
 > ```
 > [...]
