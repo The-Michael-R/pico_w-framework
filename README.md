@@ -18,7 +18,7 @@ This task is used as example how to integrate own code into the framework.
 # Requirements
 
 The raspberry [pico-sdk](https://github.com/raspberrypi/pico-sdk)
-(tested with [2.1.0](https://github.com/raspberrypi/pico-sdk))
+(tested with [2.1.1](https://github.com/raspberrypi/pico-sdk))
 
 As long as it is not merged into the official FreeRTOS, the raspberry port of
 [FreeRTOS-Kernel](https://github.com/raspberrypi/FreeRTOS-Kernel) (tested with
@@ -29,15 +29,14 @@ and work.
 
 The paths to both SDKs are set in the [`CMakeLists.txt`](CMakeLists.txt).
 
-> [!Warning]
-> To make the example work with the pico-sdk 2.1.0 you need to apply this patch:
-> [ Initialise stack in async_context_execute_sync call #2106 ](https://github.com/raspberrypi/pico-sdk/pull/2106/commits/4d4d09ec74e719ef4cf8ad7303e2cca6a95d05de) otherwise you'll ge an assertion like this:
+> [!Note]
+> If you see the following runtime error please update the piko-sdk to 2.1.1 or
+> newer:
 > ```
 > [...]
 > assertion "!(raw_irq_mask[get_core_num()] & gpio_mask)" failed: file "[...]/pico-sdk/src/rp2_common
 > [...]
 > ```
-
 
 # Features
 
