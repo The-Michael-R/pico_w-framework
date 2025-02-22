@@ -39,7 +39,7 @@ typedef enum eTcpUdpSocketType_tag
 
 /* --- Public function prototypes ------------------------------------------- */
 
-void vTcpUdpInit(void);
+eRetVal_t eTcpUdpRtosInit(void);
 eRetVal_t eTcpUdpOpenSocket(const eTcpUdpSocketType_t eType, const uint16_t uPort);
 void vTcpUdpCloseSocket(const eTcpUdpSocketType_t eType);
 

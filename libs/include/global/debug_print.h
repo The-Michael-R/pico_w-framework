@@ -87,13 +87,24 @@ typedef enum function_tag
  *
  * This function should be called early to enable the pint funtion at an early
  * stage.
+ *
+ * @return eRetVal_t Returns success/error
  */
 eRetVal_t eDebugPreInit(void);
+
+
+/**
+ * @brief FreeRTOS related initialisation
+ *
+ * @return eRetVal_t Returns success/error
+ */
+eRetVal_t eDebugRtosInit(void);
+
 
 /**
  * @brief Change severity-level of selected class
  *
- * @param eFunction     Selecting the class that severity to be changed
+ * @param eFunction  Selecting the class that severity to be changed
  * @param eSeverity  Target severity
  */
 void vDebugSetSeverity(const function_t eFunction, const logLevel_t eSeverity);

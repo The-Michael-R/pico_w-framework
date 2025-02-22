@@ -31,7 +31,7 @@
 /**
  * @brief Configure FreeRTOS independent (HW and SW) parts.
  *
- * @return Returns success/error
+ * @return eRetVal_t Returns success/error
  */
 eRetVal_t eWlanPreInit(void);
 

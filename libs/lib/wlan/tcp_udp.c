@@ -68,20 +68,32 @@ struct pbuf *sPb;
 
 /* --- Public functions ----------------------------------------------------- */
 
-void vTcpUdpInit(void)
+eRetVal_t eTcpUdpRtosInit(void)
 {
+    eRetVal_t eRetVal = ErrNoError;
+
     DBG_PR(DBG_INFO, FN_TCPUDP, "\n");
     sTcpUdpState.sTcp.iSocket = -1;
 
     sTcpUdpState.sUdp.tIp.addr = ipaddr_addr(HOST_IP_ADDR);
-    sTcpUdpState.sUdp.xUdpSendPointerQueue = xQueueCreate(TCP_UDP_SEN_QUEUE_LEN, sizeof(char *));
+    sTcpUdpState.sUdp.xUdpSendPointerQueue =
+                            xQueueCreate(TCP_UDP_SEN_QUEUE_LEN, sizeof(char *));
+
+    if (NULL == sTcpUdpState.sUdp.xUdpSendPointerQueue)
+    {
+        eRetVal = ErrError;
+    }
+
+    return(eRetVal);
 }
+
 
 eRetVal_t eTcpUdpOpenSocket(const eTcpUdpSocketType_t eType, const uint16_t uPort)
 {
+    eRetVal_t eRetVal = ErrNoError;
+
     DBG_PR(DBG_INFO, FN_TCPUDP, "\n");
 
-    eRetVal_t eRetVal = ErrNoError;
 
     if (eType == IP_UDP)
     {
@@ -116,7 +128,7 @@ void vTcpUdpSendTcp(char *const cpMessage)
         lwip_send(
             sTcpUdpState.sTcp.iSocket,
             cpMessage,
-            strlen(cpMessage),
+            strnlen(cpMessage, MAX_UDP_BUFFER),
             0);
     }
 }
@@ -131,8 +143,8 @@ void vTcpUdpPrintUdp(char *const cpMessage)
 
     sPb = pbuf_alloc(PBUF_TRANSPORT, MAX_UDP_BUFFER, PBUF_REF);
     sPb->payload = cpMessage;
-    sPb->len = strlen(cpMessage);
-    sPb->tot_len = strlen(cpMessage);
+    sPb->len = strnlen(cpMessage, MAX_UDP_BUFFER);
+    sPb->tot_len = strnlen(cpMessage, MAX_UDP_BUFFER);
 
     sPcb = udp_new();
 

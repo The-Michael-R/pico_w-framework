@@ -114,9 +114,6 @@ eRetVal_t eWlanRtosInit(void)
     BaseType_t xReturned;
     sWlanState_t* const sState = sWlanGetState();
 
-    vTcpUdpInit(); // Here to account the buffers to the WLAN task
-
-
     xReturned = xTaskCreateAffinitySet(
                     vWlanMainTask,
                     "WLAN",

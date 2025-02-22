@@ -28,6 +28,7 @@
 #include "global/debug_print.h"
 #include "global/utils.h"
 #include "wlan/wlan.h"
+#include "wlan/tcp_udp.h"
 
 
 /* --- Private macro definitions -------------------------------------------- */
@@ -143,7 +144,17 @@ static eRetVal_t eMainRtosInit(void)
 
     if (IS_NO_ERR(eRetVal))
     {
+        eRetVal = eDebugRtosInit();
+    }
+
+    if (IS_NO_ERR(eRetVal))
+    {
         eRetVal = eWlanRtosInit();
+    }
+
+    if (IS_NO_ERR(eRetVal))
+    {
+        eRetVal = eTcpUdpRtosInit();
     }
 
     if (IS_NO_ERR(eRetVal))

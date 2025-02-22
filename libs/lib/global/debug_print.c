@@ -32,7 +32,7 @@
 
 /* --- Static variables ----------------------------------------------------- */
 
-static SemaphoreHandle_t xMessageBufferSem;
+static SemaphoreHandle_t xMessageBufferSem = NULL;
 static char caMessageBuffer[MAX_UDP_BUFFER];
 
 static logLevel_t eaDebugServerityLevel[NumCl];
@@ -64,19 +64,16 @@ eRetVal_t eDebugPreInit(void)
     return(eRetVal);
 }
 
+
 eRetVal_t eDebugRtosInit(void)
 {
     eRetVal_t eRetVal = ErrNoError;
 
-    xMessageBufferSem = xSemaphoreCreateBinary();
+    xMessageBufferSem = xSemaphoreCreateMutex();
 
     if(NULL == xMessageBufferSem)
     {
         eRetVal = ErrError;
-    }
-    else
-    {
-        xSemaphoreGive(xMessageBufferSem);
     }
 
     return(eRetVal);
@@ -105,6 +102,9 @@ void _vDebugPrint(
     char* cDbgLvl;
     uint16_t uCurrPos;
     va_list args;
+    BaseType_t xGotSema = pdTRUE;
+    const bool bRtosActive = !(taskSCHEDULER_NOT_STARTED == xTaskGetSchedulerState());
+
 
     if (eLevel <= eaDebugServerityLevel[eFunction])
     {
@@ -117,8 +117,12 @@ void _vDebugPrint(
             cDbgLvl = caLevelIndicator[NumDbgLvl];
         }
 
+        if (bRtosActive)
+        {
+            xGotSema = xSemaphoreTake(xMessageBufferSem, (TickType_t)2U);
+        }
 
-        if(pdTRUE == xSemaphoreTake(xMessageBufferSem, (TickType_t)2U))
+        if(pdTRUE == xGotSema)
         {
 
             uCurrPos = snprintf(
@@ -141,7 +145,7 @@ void _vDebugPrint(
             va_end(args);
 
             // Print to UART
-            printf(caMessageBuffer);
+            printf("%s", caMessageBuffer);
 
             // If WIFI is up, send the string via UDP
             if (bWlanIsConnected())
@@ -149,7 +153,10 @@ void _vDebugPrint(
                 vTcpUdpPrintUdp(caMessageBuffer);
             }
 
-            xSemaphoreGive(xMessageBufferSem);
+            if (bRtosActive)
+            {
+                xSemaphoreGive(xMessageBufferSem);
+            }
         }
     }
 }
